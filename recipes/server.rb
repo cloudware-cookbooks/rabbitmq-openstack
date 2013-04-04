@@ -122,28 +122,28 @@ monitoring_metric "rabbitmq-server-proc" do
 end
 
 # is there a vip for us? if so, set up keepalived vrrp
-if rcb_safe_deref(node, "vips.rabbitmq-queue")
-  include_recipe "keepalived"
-  vip = node["vips"]["rabbitmq-queue"]
-  vrrp_name = "vi_#{vip.gsub(/\./, '_')}"
-  vrrp_interface = get_if_for_net('public', node)
-  router_id = vip.split(".")[3]
-
-  keepalived_chkscript "rabbitmq" do
-    script "#{platform_options["service_bin"]} rabbitmq-server status"
-    interval 5
-    action :create
-  end
-
-  keepalived_vrrp vrrp_name do
-    interface vrrp_interface
-    virtual_ipaddress Array(vip)
-    virtual_router_id router_id.to_i  # Needs to be a integer between 0..255
-    track_script "rabbitmq"
-    notify_master "#{platform_options["service_bin"]} rabbitmq-server restart; #{platform_options["service_bin"]} keystone restart"
-    notify_backup "#{platform_options["service_bin"]} rabbitmq-server restart; #{platform_options["service_bin"]} keystone restart"
-    notify_fault  "#{platform_options["service_bin"]} rabbitmq-server restart; #{platform_options["service_bin"]} keystone restart"
-    notifies :restart, resources(:service => "keepalived")
-  end
-
-end
+#if rcb_safe_deref(node, "vips.rabbitmq-queue")
+#  include_recipe "keepalived"
+#  vip = node["vips"]["rabbitmq-queue"]
+#  vrrp_name = "vi_#{vip.gsub(/\./, '_')}"
+#  vrrp_interface = get_if_for_net('public', node)
+#  router_id = vip.split(".")[3]
+#
+#  keepalived_chkscript "rabbitmq" do
+#    script "#{platform_options["service_bin"]} rabbitmq-server status"
+#    interval 5
+#    action :create
+#  end
+#
+#  keepalived_vrrp vrrp_name do
+#    interface vrrp_interface
+#    virtual_ipaddress Array(vip)
+#    virtual_router_id router_id.to_i  # Needs to be a integer between 0..255
+#    track_script "rabbitmq"
+#    notify_master "#{platform_options["service_bin"]} rabbitmq-server restart; #{platform_options["service_bin"]} keystone restart"
+#    notify_backup "#{platform_options["service_bin"]} rabbitmq-server restart; #{platform_options["service_bin"]} keystone restart"
+#    notify_fault  "#{platform_options["service_bin"]} rabbitmq-server restart; #{platform_options["service_bin"]} keystone restart"
+#    notifies :restart, resources(:service => "keepalived")
+#  end
+#
+#end
